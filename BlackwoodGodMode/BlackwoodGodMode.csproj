@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>BlackwoodGodMode</AssemblyName>
+    <RootNamespace>BlackwoodGodMode</RootNamespace>
+  </PropertyGroup>
+</Project>

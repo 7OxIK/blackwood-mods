@@ -1,0 +1,41 @@
+<Project>
+  <PropertyGroup>
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files\Steam\steamapps\common\BLACKWOOD</GameDir>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DebugType>none</DebugType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)out\$(MSBuildProjectName)\</OutputPath>
+    <!-- Copy the built plugin straight into the game's BepInEx\plugins folder -->
+    <InstallToGame Condition="'$(InstallToGame)' == ''">true</InstallToGame>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- BepInEx / Harmony / Il2CppInterop (from the game's BepInEx\core) -->
+    <Reference Include="BepInEx.Core"><HintPath>$(GameDir)\BepInEx\core\BepInEx.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Unity.IL2CPP"><HintPath>$(GameDir)\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(GameDir)\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Common"><HintPath>$(GameDir)\BepInEx\core\Il2CppInterop.Common.dll</HintPath><Private>false</Private></Reference>
+
+    <!-- Generated interop assemblies (game + Unity) -->
+    <Reference Include="Assembly-CSharp"><HintPath>$(GameDir)\BepInEx\interop\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(GameDir)\BepInEx\interop\Il2Cppmscorlib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameDir)\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <!-- One shared hotkey helper, compiled into every plugin -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\Hotkey.cs" Link="Hotkey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\Trace.cs" Link="Trace.cs" />
+  </ItemGroup>
+
+  <Target Name="InstallPlugin" AfterTargets="Build" Condition="'$(InstallToGame)' == 'true' And Exists('$(GameDir)\BepInEx\plugins')">
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(GameDir)\BepInEx\plugins" />
+    <Message Importance="high" Text="Installed $(AssemblyName).dll -> $(GameDir)\BepInEx\plugins" />
+  </Target>
+</Project>
