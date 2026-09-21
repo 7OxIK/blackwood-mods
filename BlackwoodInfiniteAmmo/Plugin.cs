@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace BlackwoodInfiniteAmmo
 {
-    [BepInPlugin(PluginGuid, "Blackwood Infinite Ammo", "1.0.0")]
+    [BepInPlugin(PluginGuid, "Blackwood Infinite Ammo", "1.0.1")]
     public class Plugin : BasePlugin
     {
         public const string PluginGuid = "local.blackwood.infiniteammo";

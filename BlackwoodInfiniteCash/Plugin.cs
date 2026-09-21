@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace BlackwoodInfiniteCash
 {
-    [BepInPlugin(PluginGuid, "Blackwood Infinite Cash", "1.0.0")]
+    [BepInPlugin(PluginGuid, "Blackwood Infinite Cash", "1.0.1")]
     public class Plugin : BasePlugin
     {
         public const string PluginGuid = "local.blackwood.infinitecash";
@@ -61,8 +61,11 @@ namespace BlackwoodInfiniteCash
             return false;
         }
 
-        // Keep both balances topped up so the on-screen numbers read as "infinite" too.
+        // Keep both balances topped up so the on-screen numbers read as "infinite" too. The game keeps the balance in
+        // two places - the hub's runtime save and the shared player settings (which the shop, computer and bank screens
+        // read, and which SyncFromPlayerSettingsToRuntime copies back over the hub save) - so both are topped up.
         private static long _nextTopUp;
+        private static bool _loggedSave, _loggedSettings, _loggedNoSettings;
 
         [HarmonyPatch(typeof(BW_HubDayManager), nameof(BW_HubDayManager.Update))]
         [HarmonyPostfix]
@@ -76,13 +79,40 @@ namespace BlackwoodInfiniteCash
 
             try
             {
-                var save = __instance._runtimeSave;
-                if (save == null) return;
-
                 var floor = Plugin.FloorCents.Value;
                 var changed = false;
-                if (save.currentCleanMoney < floor) { save.currentCleanMoney = floor; changed = true; }
-                if (save.currentDirtyMoney < floor) { save.currentDirtyMoney = floor; changed = true; }
+
+                var save = __instance._runtimeSave;
+                if (save != null)
+                {
+                    int clean = save.currentCleanMoney, dirty = save.currentDirtyMoney;
+                    if (clean < floor) { save.currentCleanMoney = floor; changed = true; }
+                    if (dirty < floor) { save.currentDirtyMoney = floor; changed = true; }
+                    if ((clean < floor || dirty < floor) && !_loggedSave)
+                    {
+                        _loggedSave = true;
+                        Plugin.Logger.LogInfo($"Topped up the hub save balances (cents): clean {clean} -> {floor}, dirty {dirty} -> {floor}.");
+                    }
+                }
+
+                var settings = __instance.playerSettings;
+                if (settings != null)
+                {
+                    int white = settings._totalWhiteMoney, black = settings._totalBlackMoney;
+                    if (white < floor) { settings._totalWhiteMoney = floor; changed = true; }
+                    if (black < floor) { settings._totalBlackMoney = floor; changed = true; }
+                    if ((white < floor || black < floor) && !_loggedSettings)
+                    {
+                        _loggedSettings = true;
+                        Plugin.Logger.LogInfo($"Topped up the player-settings balances (cents): clean {white} -> {floor}, dirty {black} -> {floor}.");
+                    }
+                }
+                else if (!_loggedNoSettings)
+                {
+                    _loggedNoSettings = true;
+                    Plugin.Logger.LogWarning("BW_HubDayManager.playerSettings is null - only the hub save balance can be topped up.");
+                }
+
                 if (changed) __instance.UpdateMoneyUI();
             }
             catch (Exception e)

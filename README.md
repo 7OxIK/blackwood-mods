@@ -13,6 +13,9 @@ Press the key to toggle a mod (only while the game window is focused). All three
 key and the cash floor can be changed in `BepInEx\config\local.blackwood.*.cfg`, which appears after the first launch.
 Each plugin is a single DLL in `BepInEx\plugins` - delete one to drop just that mod.
 
+Infinite Cash raises your real balance, so once the game saves, the money stays in your save even if you switch the
+mod off later. Lower `BalanceFloorCents` in its config if you want less than $9,999,999.
+
 Tested on Windows 10 with Blackwood's Steam build 25422644 (Unity 6000.5.3f1) and BepInEx 6.0.0-be.788.
 
 ## Install
@@ -70,6 +73,12 @@ dotnet build BlackwoodInfiniteCash\BlackwoodInfiniteCash.csproj -c Release   # a
   `Setup.ps1` sets it.
 - `JW_WeaponInfo_script._currentMag` is an index into `_MagazinePool` - never write a round count to it. `_AmmoLeft`
   is the loaded-rounds counter.
+
+## Changelog
+- **1.0.1** - Infinite Cash now really raises your balances. 1.0.0 only made spending free: the game keeps its money in
+  two places (the hub save and the shared player settings that the shop, computer and bank screens read) and the plugin
+  only wrote the first. God Mode and Infinite Ammo are unchanged (new version number only).
+- **1.0.0** - First release.
 
 ## Credits and licence
 Built on [BepInEx](https://github.com/BepInEx/BepInEx), [HarmonyX](https://github.com/BepInEx/HarmonyX),

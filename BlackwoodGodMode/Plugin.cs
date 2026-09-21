@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace BlackwoodGodMode
 {
-    [BepInPlugin(PluginGuid, "Blackwood God Mode", "1.0.0")]
+    [BepInPlugin(PluginGuid, "Blackwood God Mode", "1.0.1")]
     public class Plugin : BasePlugin
     {
         public const string PluginGuid = "local.blackwood.godmode";

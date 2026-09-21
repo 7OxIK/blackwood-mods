@@ -9,7 +9,7 @@
   folder with BepInEx + generated interop to compile against.
 #>
 param(
-    [string]$Version = '1.0.0',
+    [string]$Version = '1.0.1',
     [string]$GameDir = 'C:\Program Files\Steam\steamapps\common\BLACKWOOD'
 )
 $ErrorActionPreference = 'Stop'
